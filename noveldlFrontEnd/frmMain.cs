@@ -64,6 +64,9 @@ namespace noveldlFrontEnd
 		private IntPtr hWnd = IntPtr.Zero;
 		private string dlAfterOpeNovel1st = "";
 		private string dlAfterOpeNovel1Later = "";
+		private string[] dlAfterOpeProg = new string[3];
+
+		private string[] dlAfterOpeProg_Type = new string[3];
 
 		private string downloaderName = "";
 		private string[] urlTopParts;
@@ -99,6 +102,13 @@ namespace noveldlFrontEnd
 			dlAfterOpeNovel1st = wk.ToString();
 			GetPrivateProfileString("DownloadAfterOperation", "Novel1Later", "", wk, 512, iniPath);
 			dlAfterOpeNovel1Later = wk.ToString();
+
+			GetPrivateProfileString("DownloadAfterOperation", "ExtProgram1", "", wk, 512, iniPath);
+			dlAfterOpeProg[0] = wk.ToString();
+			GetPrivateProfileString("DownloadAfterOperation", "ExtProgram2", "", wk, 512, iniPath);
+			dlAfterOpeProg[1] = wk.ToString();
+			GetPrivateProfileString("DownloadAfterOperation", "ExtProgram3", "", wk, 512, iniPath);
+			dlAfterOpeProg[2] = wk.ToString();
 
 			frmErrSt = new frmErrStatus(this);
 
@@ -620,6 +630,14 @@ namespace noveldlFrontEnd
 								downloaderName = wk.ToString();
 								GetPrivateProfileString(UrlType, "URLTop", "", wk, 512, iniPath);
 								urlTopParts = wk.ToString().Split(',');
+
+								GetPrivateProfileString(UrlType, "ExtProgram1", "", wk, 512, iniPath);
+								dlAfterOpeProg_Type[0] = wk.ToString();
+								GetPrivateProfileString(UrlType, "ExtProgram2", "", wk, 512, iniPath);
+								dlAfterOpeProg_Type[1] = wk.ToString();
+								GetPrivateProfileString(UrlType, "ExtProgram3", "", wk, 512, iniPath);
+								dlAfterOpeProg_Type[2] = wk.ToString();
+
 								seqno++;
 							}
 							continue;
@@ -757,6 +775,16 @@ namespace noveldlFrontEnd
 							{
 								exeAfterOperation(dlAfterOpeNovel1Later, tmppath);
 							}
+							foreach (string str in dlAfterOpeProg_Type)
+							{
+								if (str == "") break;
+								exeAfterOperation(str, filepath);
+							}
+							foreach (string str in dlAfterOpeProg)
+							{
+								if (str == "") break;
+								exeAfterOperation(str, filepath);
+							}
 							//List<string> buff = File.ReadAllLines(tmppath).ToList<string>();
 							string[] buff = File.ReadAllLines(tmppath);
 							using (FileStream fs = File.Open(filepath, FileMode.Open))
@@ -812,6 +840,16 @@ namespace noveldlFrontEnd
 						if (dlAfterOpeNovel1st != "")
 						{
 							exeAfterOperation(dlAfterOpeNovel1st, filepath);
+						}
+						foreach(string str in dlAfterOpeProg_Type)
+						{
+							if (str == "") break;
+							exeAfterOperation(str, filepath);
+						}
+						foreach (string str in dlAfterOpeProg)
+						{
+							if (str == "") break;
+							exeAfterOperation(str, filepath);
 						}
 						ChapCount = TotalChap;
 					}
