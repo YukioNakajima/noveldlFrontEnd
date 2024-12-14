@@ -141,6 +141,25 @@ namespace noveldlFrontEnd
 			}
 			toolTip1.SetToolTip(chkVanish, "小説更新時に消失していないか確認する");
 			toolTip1.SetToolTip(chkListChg, "小説消失時にリストファイルの小説情報を移動します");
+			//30日以上経過したログの消去
+			string fpath = exeDirName + @"\Log\";
+			string[] files = System.IO.Directory.GetFiles(fpath, "*.log"); //, System.IO.SearchOption.AllDirectories);
+			foreach(string path in files)
+			{
+				string fname = Path.GetFileNameWithoutExtension(fpath);
+				int iy,im,id;
+				if ((fname.Length == 6)
+				&& (int.TryParse(fname.Substring(0, 2), out iy))
+				&& (int.TryParse(fname.Substring(2, 2), out im))
+				&& (int.TryParse(fname.Substring(4, 2), out id)))
+				{
+					DateTime fdate = new DateTime(iy + 2000, im, id);
+					if ((DateTime.Now - fdate).TotalDays > 30)
+					{
+						System.IO.File.Delete(path);
+					}
+				}
+			}
 		}
 
 		private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
