@@ -43,6 +43,8 @@ With Editor
 	dirPath = Left(tmpstr, InStrRev(tmpstr,"\"))
 	'リンクの図を［＃挿絵（画像ファイル名）入る］"に変換
 	Call .ReplaceAll("^[ 　\t]*［＃リンクの図（//([0-9]+)\.mitemin\..*icode/([i0-9]+)/(.*$)","［＃挿絵（$1_$2.jpg$3", 20) ' すべて置換
+'	'カクヨム用"https://kakuyomu.jp/users/mezukusugaki/news/16817330660882288213"を［＃挿絵（画像ファイル名）入る］"に変換
+	Call .ReplaceAll("^[ 　\t]*https://kakuyomu.jp/users/[^/]+/news/([i0-9]+)(.*$)","［＃挿絵（$1.jpg）入る］", 20) ' すべて置換
 
 	'ファイル先頭から最初の"［＃中見出し］"までは作品紹介なので不要
 	.GoFileTop

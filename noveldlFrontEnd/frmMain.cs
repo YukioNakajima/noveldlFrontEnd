@@ -70,6 +70,8 @@ namespace noveldlFrontEnd
 
 		private string downloaderName = "";
 		private string[] urlTopParts;
+		private string UrlType = "";
+
 
 		public bool DlAbort = false;
 		public NOVEL_STATUS novelSt = NOVEL_STATUS.None;
@@ -625,7 +627,6 @@ namespace noveldlFrontEnd
 
 			string DlBaseDir = "";
 			string novelBaseDir = "";
-			string UrlType = "";
 			int seqno = 0;
 			bool abortFlag = false;
 			string filepath = "";
@@ -854,6 +855,7 @@ namespace noveldlFrontEnd
 						{
 							//MessageBox.Show($"[{fname}]が消失しました", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 							listBoxAdd(frmErrSt.lboxErrStatus, $"Novel vanished:[{fname}], {UrlAdr}");
+							LogOut($"{fname}、消滅");
 						}
 					}
 				}
@@ -883,11 +885,13 @@ namespace noveldlFrontEnd
 							exeAfterOperation(str, filepath);
 						}
 						ChapCount = TotalChap;
+						LogOut($"{fname}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else
 					{
 						//MessageBox.Show($"[{fname}]がダウンロードできませんでした", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel not find:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、消滅");
 					}
 				}
 				if ((File.Exists(filepath)) && (ChapCount > 0))
@@ -1175,7 +1179,6 @@ namespace noveldlFrontEnd
 		/// <param name="destlist">マージする文字列のリスト</param>
 		private void getFigLink(string[] strSrray, ref List<string> destlist)
 		{
-			//［＃リンクの図（//41743.mitemin.net/userpageimage/viewimagebig/icode/i813181/）入る］
 			string[] strs = getFigLink(strSrray);
 			destlist.AddRange(strs);
 			destlist.Distinct();
@@ -1183,7 +1186,15 @@ namespace noveldlFrontEnd
 
 		private string[] getFigLink(string[] strSrray)
 		{
-			return strSrray.Where(str => str.Contains("リンクの図")).Select(str => Regex.Replace(str, @"^.*リンクの図（", "https:")).Select(str => Regex.Replace(str, @"）入る］.*", "")).ToArray();
+			switch(UrlType)
+			{
+				case "カクヨム":
+					//  https://kakuyomu.jp/users/mezukusugaki/news/16817330662721550689
+					return strSrray.Where(str => str.Contains("https://kakuyomu.jp/users/")).Select(str => Regex.Replace(str, @"^.*https:", "https:")).ToArray();
+				default:
+					//［＃リンクの図（//41743.mitemin.net/userpageimage/viewimagebig/icode/i813181/）入る］
+					return strSrray.Where(str => str.Contains("リンクの図")).Select(str => Regex.Replace(str, @"^.*リンクの図（", "https:")).Select(str => Regex.Replace(str, @"）入る］.*", "")).ToArray();
+			}
 		}
 
 		/// <summary>
