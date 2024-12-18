@@ -94,11 +94,14 @@ namespace noveldlFrontEnd
 
 			StringBuilder wk = new StringBuilder(512);
 			GetPrivateProfileString("NextDownLoad", "毎日", "2000/01/01 00:00:00", wk, 512, iniPath);
-			nextEveryDay = DateTime.Parse(wk.ToString());
+			if(DateTime.TryParse(wk.ToString(),out nextEveryDay) == false)
+			{ nextEveryDay = new DateTime(2000,01,01,00,00,00); }
 			GetPrivateProfileString("NextDownLoad", "毎週", "2000/01/01 00:00:00", wk, 512, iniPath);
-			nextEveryWeek = DateTime.Parse(wk.ToString());
+			if (DateTime.TryParse(wk.ToString(), out nextEveryWeek) == false)
+			{ nextEveryWeek = new DateTime(2000, 01, 01, 00, 00, 00); }
 			GetPrivateProfileString("NextDownLoad", "毎月", "2000/01/01 00:00:00", wk, 512, iniPath);
-			nextEveryMon = DateTime.Parse(wk.ToString());
+			if (DateTime.TryParse(wk.ToString(), out nextEveryMon) == false)
+			{ nextEveryMon = new DateTime(2000, 01, 01, 00, 00, 00); }
 
 			GetPrivateProfileString("DownloadAfterOperation", "Novel1st", "", wk, 512, iniPath);
 			dlAfterOpeNovel1st = wk.ToString();
