@@ -91,6 +91,12 @@ namespace noveldlFrontEnd
 			exePath = myAssembly.Location;
 			exeDirName = Path.GetDirectoryName(exePath);
 			iniPath = exeDirName + @"\" + Path.GetFileNameWithoutExtension(exePath) + ".ini";
+			string logPath = exeDirName + @"\Log";
+			if (Directory.Exists(logPath) == false)
+			{
+				Directory.CreateDirectory(logPath);
+			}
+			logPath += $@"\{DateTime.Now.ToString("yyyyMMdd")}.log";
 
 			StringBuilder wk = new StringBuilder(512);
 			GetPrivateProfileString("NextDownLoad", "毎日", "2000/01/01 00:00:00", wk, 512, iniPath);
@@ -158,7 +164,7 @@ namespace noveldlFrontEnd
 				string[] files = System.IO.Directory.GetFiles(fpath, "*.log"); //, System.IO.SearchOption.AllDirectories);
 				foreach (string path in files)
 				{
-					string fname = Path.GetFileNameWithoutExtension(fpath);
+					string fname = Path.GetFileNameWithoutExtension(path);
 					int iy, im, id;
 					if ((fname.Length == 6)
 					&& (int.TryParse(fname.Substring(0, 2), out iy))
@@ -637,6 +643,7 @@ namespace noveldlFrontEnd
 			string novelDir = "";
 
 			novelCount = 0;
+			UrlType = "";
 
 			try
 			{

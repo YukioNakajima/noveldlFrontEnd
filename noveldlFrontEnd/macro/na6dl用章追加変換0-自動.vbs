@@ -74,7 +74,6 @@ With Editor
 
 	Call Editor.SetUndoBuffer()		' ここでまとめてUndoバッファのリストに登録される
 	Call Editor.MoveCursor( LatestPos, 1, 0)
-	Call .FileSave						' 上書き保存
 	.SearchClearMark	' 検索マークをクリアする
 	.SetDrawSwitch(1)	' 描画再開
 	.ReDraw(0)			' 再描画
@@ -83,6 +82,7 @@ End Function
 
 Call main()
 If AUTO_FLAG Then
+	Call Editor.FileSave					' 上書き保存
 	ExitAll()
 End If
 
