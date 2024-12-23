@@ -711,10 +711,11 @@ namespace noveldlFrontEnd
 						novelCount++;
 						if (countOnly == false)
 						{
-							string fname = Path.GetFileNameWithoutExtension(filepath).TrimEnd(new char[] { ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-							string fext = $"{Path.GetExtension(filepath)}";
+							string fullpath = novelBaseDir + @"\" + filepath;
+							string fname = Path.GetFileNameWithoutExtension(fullpath);//.TrimEnd(new char[] { ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+							string fext = Path.GetExtension(fullpath);
 							//小説を格納するフォルダがなければ作成
-							novelDir = novelBaseDir + @"\" + Path.GetDirectoryName(filepath);
+							novelDir = Path.GetDirectoryName(fullpath);
 							if (Directory.Exists(novelDir) == false)
 							{
 								Directory.CreateDirectory(novelDir);
@@ -724,6 +725,11 @@ namespace noveldlFrontEnd
 							&& (chkListChg.Checked))
 							{
 								NovelListMove(filepath, ldata);
+							}
+							else if((chkListChg.Checked)
+							&& (novelSt == NOVEL_STATUS.complete))
+							{
+								NovelListMove(filepath, ldata, "#完結");
 							}
 							lblText(lblListProgress, "(" + novelCount.ToString().PadLeft(4) + " / " + novelTotal.ToString().PadLeft(4) + ")");
 						}
@@ -1000,8 +1006,9 @@ namespace noveldlFrontEnd
 		}
 
 		/// <summary>
-		/// リフトファイルの指定位置の小説情報を、指定セクションに移動する
-		/// リストファイルには
+		/// リフトファイルの指定小説情報を、指定セクションに移動する
+		/// 毎回ファイルを読み込み
+		/// リストファイルは
 		/// Novel Folder:格納するフォルダの絶対パス
 		/// #毎日
 		/// #毎週
@@ -1034,10 +1041,10 @@ namespace noveldlFrontEnd
 					}
 				}
 				//未確認の為コメントアウト
-				//Lines.InsertRange(pos + 1, new string[]{ Lines[fpathIndex], Lines[urlIndex] });
-				//Lines.RemoveAt(urlIndex);
-				//Lines.RemoveAt(fpathIndex);
-				//File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
+				Lines.InsertRange(pos + 1, new string[] { Lines[fpathIndex], Lines[urlIndex] });
+				Lines.RemoveAt(urlIndex);
+				Lines.RemoveAt(fpathIndex);
+				File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
 			}
 		}
 
@@ -1148,7 +1155,7 @@ namespace noveldlFrontEnd
 		/// </summary>
 		/// <param name="URL"></param>
 		/// <param name="filePath"></param>
-		private Process na6dlDownload(string URL, string filePath = null, int startChap = 0)
+		private Process na6dlDownload(string URL, string filePath = null, int startChap = 1)
 		{
 			//if ((URL.Contains("https://ncode.syosetu.com/n") == false)
 			//&& (URL.Contains("https://novel18.syosetu.com/n") == false))
