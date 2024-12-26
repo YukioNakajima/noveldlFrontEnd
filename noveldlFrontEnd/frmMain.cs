@@ -150,6 +150,7 @@ namespace noveldlFrontEnd
 				}
 				lblStatusApp.Text = $"実行可能迄後[{(nextEveryDay - DateTime.Now):hh\\:mm\\:ss}]";
 			}
+			//toolTip1.SetToolTip(chkMoveComplete, "小説更新時に完結した小説を#完結セクションに移動する");
 			toolTip1.SetToolTip(chkVanish, "小説更新時に消失していないか確認する");
 			toolTip1.SetToolTip(chkListChg, "小説消失時にリストファイルの小説情報を移動します");
 			//30日以上経過したログの消去
@@ -479,12 +480,12 @@ namespace noveldlFrontEnd
 			timer1.Enabled = false;
 		}
 
-		private delegate void dglbUrlListSelectedIndex(int idx);
 		/// <summary>
 		/// lbUrlListのSelectedIndexを操作する
 		/// 非同期スレッド／メインスレッド共用
 		/// </summary>
 		/// <param name="idx"></param>
+		private delegate void dglbUrlListSelectedIndex(int idx);
 		private void lbUrlListSelectedIndex(int idx)
 		{
 			if (lbUrlList.InvokeRequired)
@@ -493,6 +494,21 @@ namespace noveldlFrontEnd
 				return;
 			}
 			lbUrlList.SelectedIndex = idx;
+		}
+
+		/// <summary>
+		/// lbUrlListの選択されているアイテムを取得する
+		/// 非同期スレッド／メインスレッド共用
+		/// </summary>
+		/// <returns>選択されているアイテム</returns>
+		private delegate object dglbUrlListGetItem();
+		private object lbUrlListGetItem()
+		{
+			if (lbUrlList.InvokeRequired)
+			{
+				return this.Invoke(new dglbUrlListGetItem(lbUrlListGetItem));
+			}
+			return lbUrlList.Items[lbUrlList.SelectedIndex];
 		}
 
 		/// <summary>
@@ -703,8 +719,6 @@ namespace noveldlFrontEnd
 					if (DlAbort) break;
 					if (abortFlag) break;
 
-
-
 					if ((ldata.Length > 8)
 					&& chkUrl(ldata)
 					&& (string.IsNullOrEmpty(filepath) == false))
@@ -712,23 +726,24 @@ namespace noveldlFrontEnd
 						novelCount++;
 						if (countOnly == false)
 						{
-							string fullpath = novelBaseDir + @"\" + filepath;
-							string fname = Path.GetFileNameWithoutExtension(fullpath);//.TrimEnd(new char[] { ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-							string fext = Path.GetExtension(fullpath);
+							//string fullpath = novelBaseDir + @"\" + filepath;
+							//string fname = Path.GetFileNameWithoutExtension(filepath);//.TrimEnd(new char[] { ' ', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+							//string fext = Path.GetExtension(filepath);
 							//小説を格納するフォルダがなければ作成
-							novelDir = Path.GetDirectoryName(fullpath);
+							novelDir = Path.GetDirectoryName(novelBaseDir + @"\" + filepath);
 							if (Directory.Exists(novelDir) == false)
 							{
 								Directory.CreateDirectory(novelDir);
 							}
 							//小説一つをダウンロード
-							if ((DownloadNovel(ldata, novelDir, fname) == false)
-							&& (chkListChg.Checked))
+							if ((DownloadNovel(ldata, novelBaseDir, filepath) == false)
+							&& chkVanish.Checked && chkListChg.Checked)
 							{
+								chkListChg.Enabled = chkVanish.Checked;
+
 								NovelListMove(filepath, ldata);
 							}
-							else if((chkListChg.Checked)
-							&& (novelSt == NOVEL_STATUS.complete))
+							else if (novelSt == NOVEL_STATUS.complete)
 							{
 								NovelListMove(filepath, ldata, "#完結");
 							}
@@ -759,11 +774,16 @@ namespace noveldlFrontEnd
 		/// <param name="fname">ファイル名</param>
 		/// <param name="fext">ファイル拡張子</param>
 		/// <returns>小説がある場合true</returns>
-		private bool DownloadNovel(string UrlAdr, string DirName = "", string fname = "", string fext = ".txt")
+		private bool DownloadNovel(string UrlAdr, string baseDir = "", string relfpath = "")
 		{
 			bool result = true;
 			//小説情報ファイルを読み込む
-			string dirname = ((string.IsNullOrEmpty(DirName) ? exeDirName : DirName));
+			string fname = Path.GetFileNameWithoutExtension(relfpath);
+			string fext = Path.GetExtension(relfpath);
+			//string fullpath = baseDir + @"\" + relfpath;
+			string novelDir = Path.GetDirectoryName(baseDir + @"\" + relfpath);
+
+			string dirname = ((string.IsNullOrEmpty(novelDir) ? exeDirName : novelDir));
 			string infopath = $@"{dirname}\{fname}Info.txt";
 			string filepath = (string.IsNullOrEmpty(fname) ? "" : $@"{dirname}\{fname}{fext}");
 			int latestChap = 0;
@@ -875,6 +895,13 @@ namespace noveldlFrontEnd
 							LogOut($"{fname}、消滅");
 						}
 					}
+					//完結確認
+					if (novelSt == NOVEL_STATUS.complete)
+					{
+						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completeed:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、完結");
+					}
 				}
 				else
 				{
@@ -909,6 +936,13 @@ namespace noveldlFrontEnd
 						//MessageBox.Show($"[{fname}]がダウンロードできませんでした", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel not find:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、消滅");
+					}
+					//完結確認
+					if (novelSt == NOVEL_STATUS.complete)
+					{
+						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completeed:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、完結");
 					}
 				}
 				if ((File.Exists(filepath)) && (ChapCount > 0))
@@ -1023,29 +1057,36 @@ namespace noveldlFrontEnd
 		/// <param name="section">移動先のセクション</param>
 		private void NovelListMove(string filepath, string url, string section = "#消滅")
 		{
-			//指定されたURLがリストファイルに無ければ追加する
-			string listfilepath = exeDirName + @"\" + (string)lbUrlList.Items[lbUrlList.SelectedIndex];
-			List<string> Lines = File.ReadAllLines(listfilepath).ToList<string>();
-			int fpathIndex = Lines.IndexOf(filepath);
-			int urlIndex = Lines.IndexOf(url);
-			int idx = Lines.IndexOf(section);
-			if ((fpathIndex > 0) && (urlIndex > 0) && (idx > 0))
+			try
 			{
-				//リストの指定セクションの最後に追加する
-				int pos = idx++;
-				for (; idx < Lines.Count; idx++)
+				//指定されたURLがリストファイルに無ければ追加する
+				string listfilepath = (string)lbUrlListGetItem();
+				List<string> Lines = File.ReadAllLines(listfilepath).ToList<string>();
+				int fpathIndex = Lines.IndexOf(filepath);
+				int urlIndex = Lines.IndexOf(url);
+				int idx = Lines.IndexOf(section);
+				if ((fpathIndex > 0) && (urlIndex > 0) && (idx > 0))
 				{
-					if (string.IsNullOrEmpty(Lines[idx].Trim()) == false)
+					//リストの指定セクションの最後に追加する
+					int pos = idx++;
+					for (; idx < Lines.Count; idx++)
 					{
-						if (Lines[idx].Trim().Substring(0, 1) == "#") break;
-						pos = idx;
+						if (string.IsNullOrEmpty(Lines[idx].Trim()) == false)
+						{
+							if (Lines[idx].Trim().Substring(0, 1) == "#") break;
+							pos = idx;
+						}
 					}
+					//未確認の為コメントアウト
+					Lines.InsertRange(pos + 1, new string[] { Lines[fpathIndex], Lines[urlIndex] });
+					Lines.RemoveAt(urlIndex);
+					Lines.RemoveAt(fpathIndex);
+					File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
 				}
-				//未確認の為コメントアウト
-				Lines.InsertRange(pos + 1, new string[] { Lines[fpathIndex], Lines[urlIndex] });
-				Lines.RemoveAt(urlIndex);
-				Lines.RemoveAt(fpathIndex);
-				File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
+			}
+			catch (Exception ex)
+			{
+				string errstr = ex.Message;
 			}
 		}
 

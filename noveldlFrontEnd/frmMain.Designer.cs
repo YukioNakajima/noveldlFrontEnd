@@ -62,7 +62,7 @@
 			// chkVanish
 			// 
 			this.chkVanish.AutoSize = true;
-			this.chkVanish.Location = new System.Drawing.Point(259, 239);
+			this.chkVanish.Location = new System.Drawing.Point(356, 239);
 			this.chkVanish.Name = "chkVanish";
 			this.chkVanish.Size = new System.Drawing.Size(72, 16);
 			this.chkVanish.TabIndex = 12;
@@ -121,7 +121,7 @@
 			// 
 			this.chkListChg.AutoSize = true;
 			this.chkListChg.Enabled = false;
-			this.chkListChg.Location = new System.Drawing.Point(333, 239);
+			this.chkListChg.Location = new System.Drawing.Point(434, 239);
 			this.chkListChg.Name = "chkListChg";
 			this.chkListChg.Size = new System.Drawing.Size(72, 16);
 			this.chkListChg.TabIndex = 13;
@@ -212,7 +212,7 @@
 			// 
 			this.コピーToolStripMenuItem.Name = "コピーToolStripMenuItem";
 			this.コピーToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-			this.コピーToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.コピーToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.コピーToolStripMenuItem.Text = "コピー";
 			this.コピーToolStripMenuItem.Click += new System.EventHandler(this.コピーToolStripMenuItem_Click);
 			// 
@@ -225,7 +225,7 @@
 			// 
 			this.ペーストToolStripMenuItem.Name = "ペーストToolStripMenuItem";
 			this.ペーストToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-			this.ペーストToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+			this.ペーストToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
 			this.ペーストToolStripMenuItem.Text = "ペースト";
 			this.ペーストToolStripMenuItem.Click += new System.EventHandler(this.ペーストToolStripMenuItem_Click);
 			// 
@@ -315,8 +315,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(519, 316);
 			this.Controls.Add(this.chkVanish);
-			this.Controls.Add(this.btnfrmErrStShow);
 			this.Controls.Add(this.chkListChg);
+			this.Controls.Add(this.btnfrmErrStShow);
 			this.Controls.Add(this.lblStatusApp);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.lblListProgress);
