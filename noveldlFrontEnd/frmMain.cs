@@ -429,6 +429,7 @@ namespace noveldlFrontEnd
 						{
 							case "連載中": novelSt = NOVEL_STATUS.Running; break;
 							case "中断": novelSt = NOVEL_STATUS.Stopped; break;
+							case "短編":
 							case "完結": novelSt = NOVEL_STATUS.complete; break;
 							default: novelSt = NOVEL_STATUS.None; break;
 						}
