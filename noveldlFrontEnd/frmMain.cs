@@ -847,12 +847,12 @@ namespace noveldlFrontEnd
 							foreach (string str in dlAfterOpeProg_Type)
 							{
 								if (str == "") break;
-								exeAfterOperation(str, filepath);
+								exeAfterOperation(str, tmppath);
 							}
 							foreach (string str in dlAfterOpeProg)
 							{
 								if (str == "") break;
-								exeAfterOperation(str, filepath);
+								exeAfterOperation(str, tmppath);
 							}
 							//List<string> buff = File.ReadAllLines(tmppath).ToList<string>();
 							string[] buff = File.ReadAllLines(tmppath);
@@ -875,7 +875,8 @@ namespace noveldlFrontEnd
 							File.Delete(tmppath);
 							File.Delete($@"{dirname}\__tmp.log");
 						}
-						LogOut($"{fname}、開始章{startChap}、読込章数{ChapCount}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel updated #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else if (chkVanish.Checked)
 					{
@@ -892,15 +893,15 @@ namespace noveldlFrontEnd
 						{
 							//MessageBox.Show($"[{fname}]が消失しました", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 							listBoxAdd(frmErrSt.lboxErrStatus, $"Novel vanished:[{fname}], {UrlAdr}");
-							LogOut($"{fname}、消滅");
+							LogOut($"{fname}、{UrlAdr}、消滅");
 						}
 					}
 					//完結確認
 					if (novelSt == NOVEL_STATUS.complete)
 					{
 						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completeed:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、完結");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completed:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、{UrlAdr}、完結");
 					}
 				}
 				else
@@ -929,20 +930,21 @@ namespace noveldlFrontEnd
 							exeAfterOperation(str, filepath);
 						}
 						ChapCount = TotalChap;
-						LogOut($"{fname}、開始章{startChap}、読込章数{ChapCount}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel get #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else
 					{
 						//MessageBox.Show($"[{fname}]がダウンロードできませんでした", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel not find:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、消滅");
+						LogOut($"{fname}、{UrlAdr}、消滅");
 					}
 					//完結確認
 					if (novelSt == NOVEL_STATUS.complete)
 					{
 						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completeed:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、完結");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completed:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、{UrlAdr}、完結");
 					}
 				}
 				if ((File.Exists(filepath)) && (ChapCount > 0))
