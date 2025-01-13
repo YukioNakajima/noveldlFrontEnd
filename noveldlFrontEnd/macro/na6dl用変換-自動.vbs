@@ -5,6 +5,7 @@ Option Explicit
 '"［＃挿絵（[画像ファイル名]）入る］"
 'ファイル最初が作品名、作者名で、次は改行2つが青空書式のはず
 '罫線囲みは作者コメントなので削除する
+' Ver.2
 '
 
 Private AUTO_FLAG 'As Boolean

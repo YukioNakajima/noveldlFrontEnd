@@ -6,6 +6,7 @@ Option Explicit
 '"［＃挿絵（[画像ファイル名]）入る］"
 'ファイル先頭から最初の"［＃中見出し］"までは作品紹介なので不要
 '罫線囲みは作者コメントなので削除する
+' Ver.2
 '
 
 Private AUTO_FLAG 'As Boolean

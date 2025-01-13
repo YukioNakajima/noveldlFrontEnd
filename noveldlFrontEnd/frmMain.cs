@@ -1233,6 +1233,7 @@ namespace noveldlFrontEnd
 
 		/// <summary>
 		/// "［＃リンクの図（//41743.mitemin.net/userpageimage/viewimagebig/icode/i813181/）入る］"と同様の文字列を含む行を抽出、
+		/// 「https://41743.mitemin.net/i813181/」
 		/// リンクのみにして指定のリストにマージ、
 		/// 重複を削除する
 		/// </summary>
@@ -1254,7 +1255,8 @@ namespace noveldlFrontEnd
 					return strSrray.Where(str => str.Contains("https://kakuyomu.jp/users/")).Select(str => Regex.Replace(str, @"^.*https:", "https:")).ToArray();
 				default:
 					//［＃リンクの図（//41743.mitemin.net/userpageimage/viewimagebig/icode/i813181/）入る］
-					return strSrray.Where(str => str.Contains("リンクの図")).Select(str => Regex.Replace(str, @"^.*リンクの図（", "https:")).Select(str => Regex.Replace(str, @"）入る］.*", "")).ToArray();
+					//return strSrray.Where(str => str.Contains("リンクの図")).Select(str => Regex.Replace(str, @"^.*リンクの図（", "https:")).Select(str => Regex.Replace(str, @"）入る］.*", "")).ToArray();
+					return strSrray.Where(str => str.Contains("リンクの図")).Select(str => Regex.Replace(str, @"^.*リンクの図（", "https:")).Select(str => Regex.Replace(str, @"/userpageimage/viewimagebig/icode/", @"/")).Select(str => Regex.Replace(str, @"）入る］.*", "")).ToArray();
 			}
 		}
 
