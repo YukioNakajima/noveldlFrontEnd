@@ -875,7 +875,7 @@ namespace noveldlFrontEnd
 							File.Delete(tmppath);
 							File.Delete($@"{dirname}\__tmp.log");
 						}
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel updated #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else if (chkVanish.Checked)
@@ -892,7 +892,7 @@ namespace noveldlFrontEnd
 						if (result == false)
 						{
 							//MessageBox.Show($"[{fname}]が消失しました", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-							listBoxAdd(frmErrSt.lboxErrStatus, $"Novel vanished:[{fname}], {UrlAdr}");
+							listBoxAdd(frmErrSt.lboxErrStatus, $"消滅:[{fname}], {UrlAdr}");
 							LogOut($"{fname}、{UrlAdr}、消滅");
 						}
 					}
@@ -900,7 +900,7 @@ namespace noveldlFrontEnd
 					if (novelSt == NOVEL_STATUS.complete)
 					{
 						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completed:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"完結:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、完結");
 					}
 				}
@@ -930,20 +930,20 @@ namespace noveldlFrontEnd
 							exeAfterOperation(str, filepath);
 						}
 						ChapCount = TotalChap;
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel get #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else
 					{
 						//MessageBox.Show($"[{fname}]がダウンロードできませんでした", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel not find:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"ロスト:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、消滅");
 					}
 					//完結確認
 					if (novelSt == NOVEL_STATUS.complete)
 					{
 						MessageBox.Show($"[{fname}]が完結しました", "通知", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"Novel completed:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"完結:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、完結");
 					}
 				}
@@ -966,7 +966,7 @@ namespace noveldlFrontEnd
 			catch (Exception ex)
 			{
 				MessageBox.Show(ex.Message);
-				listBoxAdd(frmErrSt.lboxErrStatus, $"DL Error:[{fname}], {UrlAdr}");
+				listBoxAdd(frmErrSt.lboxErrStatus, $"失敗:[{fname}], {UrlAdr}");
 			}
 			return result;
 		}
