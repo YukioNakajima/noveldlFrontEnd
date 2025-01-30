@@ -408,6 +408,23 @@ namespace noveldlFrontEnd
 			}
 		}
 
+		private NOVEL_STATUS chkNovelSt(string strTitle)
+		{
+			int spos = strTitle.IndexOf('【');
+			int epos = strTitle.IndexOf('】');
+			if ((spos >= 0) && (epos >= 0))
+			{
+				switch (strTitle.Substring(spos + 1, epos - spos - 1))
+				{
+					case "連載中": return NOVEL_STATUS.Running; break;
+					case "中断": return NOVEL_STATUS.Stopped; break;
+					case "短編":
+					case "完結": return NOVEL_STATUS.complete; break;
+				}
+			}
+			return NOVEL_STATUS.None;
+		}
+
 		/// <summary>
 		/// C#による仮想WndProc()、WM_COPYDATAとWM_USER+30(WM_DLINFO)をハンドルする
 		/// </summary>
@@ -424,16 +441,7 @@ namespace noveldlFrontEnd
 						TotalChap = cds.dwData;
 						string novelname = Marshal.PtrToStringAuto(cds.lpData);
 						lblNovelTitle.Text = novelname;
-						int spos = novelname.IndexOf('【') + 1;
-						int epos = novelname.IndexOf('】');
-						switch (novelname.Substring(spos, epos - spos))
-						{
-							case "連載中": novelSt = NOVEL_STATUS.Running; break;
-							case "中断": novelSt = NOVEL_STATUS.Stopped; break;
-							case "短編":
-							case "完結": novelSt = NOVEL_STATUS.complete; break;
-							default: novelSt = NOVEL_STATUS.None; break;
-						}
+						novelSt = chkNovelSt(novelname);
 					}
 					break;
 				case WM_DLINFO:
@@ -785,6 +793,7 @@ namespace noveldlFrontEnd
 
 			string dirname = ((string.IsNullOrEmpty(novelDir) ? exeDirName : novelDir));
 			string infopath = $@"{dirname}\{fname}Info.txt";
+			string logpath = $@"{dirname}\{fname}.log";
 			string filepath = (string.IsNullOrEmpty(fname) ? "" : $@"{dirname}\{fname}{fext}");
 			int latestChap = 0;
 			ChapCount = 0;
@@ -958,6 +967,22 @@ namespace noveldlFrontEnd
 							foreach (string str in infoLines)
 							{
 								sw.WriteLine(str);
+							}
+						}
+					}
+					//小説logファイルを読み込み、小説ステータスを取得する
+					if(novelSt == NOVEL_STATUS.None)
+					{
+						string[] rlines = File.ReadAllLines(logpath);
+						if (rlines.Length > 0)
+						{
+							foreach (string str in rlines)
+							{
+								if (str.IndexOf("タイトル:") >= 0)
+								{
+									novelSt = chkNovelSt(str);
+									break;
+								}
 							}
 						}
 					}

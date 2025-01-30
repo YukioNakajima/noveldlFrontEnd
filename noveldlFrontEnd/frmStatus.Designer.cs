@@ -75,6 +75,7 @@
 			// 
 			// btnLogOut
 			// 
+			this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnLogOut.Location = new System.Drawing.Point(114, 168);
 			this.btnLogOut.Name = "btnLogOut";
 			this.btnLogOut.Size = new System.Drawing.Size(75, 28);
@@ -85,6 +86,7 @@
 			// 
 			// btnLogDelAll
 			// 
+			this.btnLogDelAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnLogDelAll.Location = new System.Drawing.Point(205, 168);
 			this.btnLogDelAll.Name = "btnLogDelAll";
 			this.btnLogDelAll.Size = new System.Drawing.Size(75, 28);
