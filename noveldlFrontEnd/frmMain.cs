@@ -14,24 +14,10 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
+using UC;
+
 namespace noveldlFrontEnd
 {
-	public enum NOVEL_STATUS
-	{
-		Vanishment = -1,
-		None = 0,
-		Running = 1,
-		Stopped = 2,
-		complete = 9,
-	}
-
-	[StructLayout(LayoutKind.Explicit)]
-	public struct COPYDATASTRUCT32
-	{
-		[FieldOffset(0)] public UInt32 dwData;
-		[FieldOffset(4)] public UInt32 cbData;
-		[FieldOffset(8)] public IntPtr lpData;
-	}
 
 	public partial class frmMain : Form
 	{
@@ -125,10 +111,7 @@ namespace noveldlFrontEnd
 
 			hWnd = this.Handle;
 
-			lblNovelTitle.Text =
-			lblStatusApp.Text =
-			lblStatusNovel.Text = "";
-			lblProgress.Text = "";
+			lblStatusApp.Text = "";
 
 			frmErrSt.Location = new Point(this.Location.X, this.Location.Y + this.Size.Height);
 
@@ -144,7 +127,7 @@ namespace noveldlFrontEnd
 			if (nextEveryDay > DateTime.Now)
 			{
 				btnDownload.Enabled = false;
-				if (MessageBox.Show($"最後にダウンロードしてから１２時間経過していません\nあと[{(nextEveryDay - DateTime.Now):hh\\:mm\\:ss}]\n終了しますか？(y/n)", "警告", MessageBoxButtons.YesNo) == DialogResult.Yes)
+				if (MessageBox.Show($"最後にダウンロードしてから１２時間経過していません\nあと[{(nextEveryDay - DateTime.Now):hh\\:mm\\:ss}]\n実行しますか？(y/n)", "警告", MessageBoxButtons.YesNo) == DialogResult.No)
 				{
 					Close();
 				}
@@ -286,8 +269,7 @@ namespace noveldlFrontEnd
 
 		private void btnAddList_Click(object sender, EventArgs e)
 		{
-			lblStatusApp.Text =
-			lblStatusNovel.Text = "";
+			lblStatusApp.Text = "";
 			sStatus = "";
 
 			string path = "";
@@ -371,8 +353,7 @@ namespace noveldlFrontEnd
 
 		private void btnDelList_Click(object sender, EventArgs e)
 		{
-			lblStatusApp.Text =
-			lblStatusNovel.Text = "";
+			lblStatusApp.Text = "";
 			sStatus = "";
 			if ((lbUrlList.SelectedIndex < 0) || (lbUrlList.SelectedIndex >= lbUrlList.Items.Count))
 			{
@@ -423,35 +404,6 @@ namespace noveldlFrontEnd
 				}
 			}
 			return NOVEL_STATUS.None;
-		}
-
-		/// <summary>
-		/// C#による仮想WndProc()、WM_COPYDATAとWM_USER+30(WM_DLINFO)をハンドルする
-		/// </summary>
-		/// <param name="m"></param>
-		protected override void WndProc(ref Message m)
-		{
-			base.WndProc(ref m);
-
-			switch (m.Msg)
-			{
-				case WM_COPYDATA:
-					{
-						COPYDATASTRUCT32 cds = (COPYDATASTRUCT32)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT32));
-						TotalChap = cds.dwData;
-						string novelname = Marshal.PtrToStringAuto(cds.lpData);
-						lblNovelTitle.Text = novelname;
-						novelSt = chkNovelSt(novelname);
-					}
-					break;
-				case WM_DLINFO:
-					{
-						ChapCount = (UInt32)m.WParam;
-						lblProgress.Text = $"{(int)(ChapCount * 100 / TotalChap)}".PadLeft(3) + $@"% ({ChapCount}/{TotalChap})";
-						lblProgress.BackColor = ((ChapCount & 1) == 0) ? SystemColors.Control : Color.AliceBlue;
-					}
-					break;
-			}
 		}
 
 		private async void btnDownload_Click(object sender, EventArgs e)
@@ -580,9 +532,8 @@ namespace noveldlFrontEnd
 			try
 			{
 				lblText(lblStatusApp, "ダウンロード中");
-				lblText(lblStatusNovel, "");
+				uC_NovelDL.statusClear();
 				sStatus = "";
-				lblText(lblNovelTitle, "");
 
 				busy = true;
 				string section = CheckDateTime();
@@ -648,6 +599,35 @@ namespace noveldlFrontEnd
 			return false;
 		}
 
+		private string getListFileInfo(string lineData)
+		{
+			//string DlBaseDir = "";
+			string novelBaseDir = "";
+
+			if (UrlType == "") UrlType = getSetting(lineData, "Type:");
+			//if (DlBaseDir == "") DlBaseDir = getSetting(lineData, "DL Folder:");
+			if (novelBaseDir == "") novelBaseDir = getSetting(lineData, "Novel Folder:");
+			if ((UrlType != "")
+			//&& (DlBaseDir != "")
+			&& (novelBaseDir != ""))
+			{
+				StringBuilder wk = new StringBuilder(512);
+				GetPrivateProfileString(UrlType, "Downloader", "", wk, 512, iniPath);
+				downloaderName = wk.ToString();
+				GetPrivateProfileString(UrlType, "URLTop", "", wk, 512, iniPath);
+				urlTopParts = wk.ToString().Split(',');
+
+				GetPrivateProfileString(UrlType, "ExtProgram1", "", wk, 512, iniPath);
+				dlAfterOpeProg_Type[0] = wk.ToString();
+				GetPrivateProfileString(UrlType, "ExtProgram2", "", wk, 512, iniPath);
+				dlAfterOpeProg_Type[1] = wk.ToString();
+				GetPrivateProfileString(UrlType, "ExtProgram3", "", wk, 512, iniPath);
+				dlAfterOpeProg_Type[2] = wk.ToString();
+				return novelBaseDir;
+			}
+			return "";
+		}
+
 		/// <summary>
 		/// リストファイルの小説をダウンロードする
 		/// </summary>
@@ -659,7 +639,7 @@ namespace noveldlFrontEnd
 		{
 			bool result = false;
 
-			string DlBaseDir = "";
+			//string DlBaseDir = "";
 			string novelBaseDir = "";
 			int seqno = 0;
 			bool abortFlag = false;
@@ -687,26 +667,28 @@ namespace noveldlFrontEnd
 					{
 						//小説を保存するベースフォルダと、ダウンロードした各章テキストを保存するベースフォルダを取得する
 						case 0:
-							if(UrlType == "") UrlType = getSetting(ldata, "Type:");
-							if (DlBaseDir == "") DlBaseDir = getSetting(ldata, "DL Folder:");
-							if (novelBaseDir == "") novelBaseDir = getSetting(ldata, "Novel Folder:");
-							if ((UrlType != "") && (DlBaseDir != "") && (novelBaseDir != ""))
-							{
-								StringBuilder wk = new StringBuilder(512);
-								GetPrivateProfileString(UrlType, "Downloader", "", wk, 512, iniPath);
-								downloaderName = wk.ToString();
-								GetPrivateProfileString(UrlType, "URLTop", "", wk, 512, iniPath);
-								urlTopParts = wk.ToString().Split(',');
+							//if(UrlType == "") UrlType = getSetting(ldata, "Type:");
+							//if (DlBaseDir == "") DlBaseDir = getSetting(ldata, "DL Folder:");
+							//if (novelBaseDir == "") novelBaseDir = getSetting(ldata, "Novel Folder:");
+							//if ((UrlType != "") && (DlBaseDir != "") && (novelBaseDir != ""))
+							//{
+							//	StringBuilder wk = new StringBuilder(512);
+							//	GetPrivateProfileString(UrlType, "Downloader", "", wk, 512, iniPath);
+							//	downloaderName = wk.ToString();
+							//	GetPrivateProfileString(UrlType, "URLTop", "", wk, 512, iniPath);
+							//	urlTopParts = wk.ToString().Split(',');
 
-								GetPrivateProfileString(UrlType, "ExtProgram1", "", wk, 512, iniPath);
-								dlAfterOpeProg_Type[0] = wk.ToString();
-								GetPrivateProfileString(UrlType, "ExtProgram2", "", wk, 512, iniPath);
-								dlAfterOpeProg_Type[1] = wk.ToString();
-								GetPrivateProfileString(UrlType, "ExtProgram3", "", wk, 512, iniPath);
-								dlAfterOpeProg_Type[2] = wk.ToString();
+							//	GetPrivateProfileString(UrlType, "ExtProgram1", "", wk, 512, iniPath);
+							//	dlAfterOpeProg_Type[0] = wk.ToString();
+							//	GetPrivateProfileString(UrlType, "ExtProgram2", "", wk, 512, iniPath);
+							//	dlAfterOpeProg_Type[1] = wk.ToString();
+							//	GetPrivateProfileString(UrlType, "ExtProgram3", "", wk, 512, iniPath);
+							//	dlAfterOpeProg_Type[2] = wk.ToString();
 
-								seqno++;
-							}
+							//	seqno++;
+							//}
+							novelBaseDir = getListFileInfo(ldata);
+							if(novelBaseDir != "") seqno++;
 							continue;
 						//小説読み込みの最後のセクションを探す
 						case 1:
@@ -823,9 +805,6 @@ namespace noveldlFrontEnd
 					}
 					if (DlAbort) return result;
 				}
-				lblText(lblStatusNovel, "ダウンロード中");
-				lblText(lblNovelTitle, fname);
-				lblText(lblProgress, "");
 
 				int startChap = 0;
 				//string tmppath = $@"{exeDirName}\tmp.txt";
@@ -837,8 +816,9 @@ namespace noveldlFrontEnd
 				{
 					startChap = latestChap + 1;
 					if (File.Exists(tmppath)) File.Delete(tmppath);
+					uC_NovelDL.NovelTitle = filepath;
 					//小説を続きの章から最新章までダウンロード
-					proc = na6dlDownload(UrlAdr, tmppath, startChap);
+					proc = uC_NovelDL.novelDownload(downloaderName,UrlAdr, tmppath, startChap);
 					proc.WaitForExit();
 
 					//小説をダウンロードしたファイルが有る
@@ -884,17 +864,18 @@ namespace noveldlFrontEnd
 							File.Delete(tmppath);
 							File.Delete($@"{dirname}\__tmp.log");
 						}
+						ChapCount = TotalChap = uC_NovelDL.ChapNum;
 						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else if (chkVanish.Checked)
 					{
 						//小説が消滅していないか確認する
-						lblText(lblStatusNovel, "小説存在確認中");
+						//lblText(lblStatusNovel, "小説存在確認中");
 						startChap = latestChap - 1;
 						//前回の最終章の１つ前の章からダウンロード
 						tmppath = $@"{exeDirName}\tmp.txt";
-						proc = na6dlDownload(UrlAdr, tmppath, startChap);
+						proc = uC_NovelDL.novelDownload(downloaderName, UrlAdr, tmppath, startChap);
 						proc.WaitForExit();
 						//ファイルができなければ小説が消滅している
 						result = deleteTmpFiles();
@@ -916,7 +897,7 @@ namespace noveldlFrontEnd
 				else
 				{
 					//小説を最初から最新章までダウンロード
-					proc = na6dlDownload(UrlAdr, filepath);
+					proc = uC_NovelDL.novelDownload(downloaderName, UrlAdr, filepath);
 					proc.WaitForExit();
 					result = File.Exists(filepath);
 					if (result)
@@ -938,9 +919,9 @@ namespace noveldlFrontEnd
 							if (str == "") break;
 							exeAfterOperation(str, filepath);
 						}
-						ChapCount = TotalChap;
-						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
+						ChapCount = TotalChap = uC_NovelDL.ChapNum;
+						listBoxAdd(frmErrSt.lboxErrStatus, $"追加 #1 count{ChapCount}:[{fname}], {UrlAdr}");
+						LogOut($"{fname}、{UrlAdr}、開始章1、読込章数{ChapCount}");
 					}
 					else
 					{
@@ -1123,7 +1104,7 @@ namespace noveldlFrontEnd
 		/// <param name="lineData"></param>
 		/// <param name="key"></param>
 		/// <returns></returns>
-		private string getSetting(string lineData, string key)
+		public static string getSetting(string lineData, string key)
 		{
 			int idx = lineData.IndexOf(key);
 			if (idx >= 0)
@@ -1220,43 +1201,6 @@ namespace noveldlFrontEnd
 		}
 
 		/// <summary>
-		/// na6dl.exeを使って小説一つをダウンロードする
-		/// </summary>
-		/// <param name="URL"></param>
-		/// <param name="filePath"></param>
-		private Process na6dlDownload(string URL, string filePath = null, int startChap = 1)
-		{
-			//if ((URL.Contains("https://ncode.syosetu.com/n") == false)
-			//&& (URL.Contains("https://novel18.syosetu.com/n") == false))
-			//{
-			//	return null;
-			//}
-
-			Process proc = new Process();
-			proc.StartInfo.FileName = downloaderName; // @"na6dl.exe";
-			string arg = $" \"-h {hWnd}\"";
-			if (string.IsNullOrEmpty(filePath) == false)
-			{
-				arg += $" \"{filePath}\"";
-			}
-			if (startChap > 0)
-			{
-				arg += $" \"-s {startChap}\"";
-			}
-			arg += $" {URL}";
-			proc.StartInfo.Arguments = arg;
-
-			proc.StartInfo.CreateNoWindow = true; // コンソール・ウィンドウを開かない
-			proc.StartInfo.UseShellExecute = false; // シェル機能を使用しない
-			proc.SynchronizingObject = this;
-			proc.Exited += new EventHandler(proc_Exited);//終了イベントを登録
-			proc.EnableRaisingEvents = true;
-			//起動する
-			proc.Start();
-			return proc;
-		}
-
-		/// <summary>
 		/// "［＃リンクの図（//41743.mitemin.net/userpageimage/viewimagebig/icode/i813181/）入る］"と同様の文字列を含む行を抽出、
 		/// 「https://41743.mitemin.net/i813181/」
 		/// リンクのみにして指定のリストにマージ、
@@ -1285,27 +1229,6 @@ namespace noveldlFrontEnd
 			}
 		}
 
-		/// <summary>
-		/// コマンドプロンプトの終了イベント
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void proc_Exited(object sender, EventArgs e)
-		{
-			//プロセスが終了したときに実行される
-			//lblStatusNovel.Text = (sStatus == "") ? "ダウンロード終了" : sStatus;
-			if (sStatus == "")
-			{
-				lblText(lblStatusNovel, "ダウンロード終了");
-				if (TotalChap != 0) lblText(lblProgress, $"100% ({TotalChap}/{TotalChap})");
-			}
-			else
-			{
-				lblText(lblStatusNovel, sStatus);
-			}
-			lblBkCol(lblProgress, SystemColors.Control);
-		}
-
 		private string latesttime = "";
 		private void timer1_Tick(object sender, EventArgs e)
 		{
@@ -1321,6 +1244,70 @@ namespace noveldlFrontEnd
 		private void chkVanish_CheckedChanged(object sender, EventArgs e)
 		{
 			chkListChg.Enabled = chkVanish.Checked;
+		}
+
+		private async void btnNovelAdd_Click(object sender, EventArgs e)
+		{
+			int idx = lbUrlList.SelectedIndex;
+			if (idx < 0)
+			{
+				MessageBox.Show("小説を追加するリストファイルを選択してください");
+				return;
+			}
+
+			string tmppath = (string)lbUrlList.Items[idx];
+			string listPath = Path.GetFullPath(tmppath);
+			if (File.Exists(listPath) == false)
+			{
+				MessageBox.Show(this, $"リスト[{tmppath}]が有りません。スキップします", "警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+			bool btndlen = btnDownload.Enabled;
+			btnDownload.Enabled = 
+			lbUrlList.Enabled =
+			pnlBtn.Enabled = false;
+			string baseDir = "";
+			using (StreamReader sr = new StreamReader(listPath))
+			{
+				for (; baseDir == "" && !sr.EndOfStream;)
+				{
+					baseDir = getListFileInfo(sr.ReadLine());
+				}
+			}
+			frmNovelAdd frmNA = new frmNovelAdd(baseDir);
+			if (frmNA.ShowDialog() == DialogResult.OK)
+			{
+				if (frmErrSt.Visible == false) frmErrSt.Show(this);
+
+				await DownloadOneAsync(frmNA.URL, baseDir, frmNA.RelPath);
+			}
+			btnDownload.Enabled = btndlen;
+			lbUrlList.Enabled =
+			pnlBtn.Enabled = true;
+		}
+
+		private async Task DownloadOneAsync(string url, string baseDir, string relPath)
+		{
+			latestDLDateTime = DateTime.Now;
+			timer1.Enabled = true;
+			Task task = Task.Run(() => { DownloadOne(url, baseDir, relPath); });
+			await task;
+			timer1.Enabled = false;
+		}
+
+		private void DownloadOne(string url, string baseDir, string relPath)
+		{
+			if (DownloadNovel(url, baseDir, relPath))
+			{
+				if (novelSt == NOVEL_STATUS.complete)
+				{
+					NovelListMove(relPath, url, "#完結");
+				}
+				else
+				{
+					NovelListMove(relPath, url, "#毎週");
+				}
+			}
 		}
 
 	}

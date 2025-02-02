@@ -34,7 +34,6 @@
 			this.btnfrmErrStShow = new System.Windows.Forms.Button();
 			this.btnItemDn = new System.Windows.Forms.Button();
 			this.btnItemUp = new System.Windows.Forms.Button();
-			this.btnUrlAdd = new System.Windows.Forms.Button();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.chkListChg = new System.Windows.Forms.CheckBox();
 			this.lblStatusApp = new System.Windows.Forms.Label();
@@ -47,16 +46,13 @@
 			this.コピーToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
 			this.ペーストToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.lblNovelTitle = new System.Windows.Forms.Label();
-			this.lblProgress = new System.Windows.Forms.Label();
-			this.lblStatusNovel = new System.Windows.Forms.Label();
 			this.pnlBtn = new System.Windows.Forms.Panel();
+			this.btnNovelAdd = new System.Windows.Forms.Button();
 			this.btnAddList = new System.Windows.Forms.Button();
 			this.btnDelList = new System.Windows.Forms.Button();
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.uC_NovelDL = new UC.UC_DownloadNovel();
 			this.contextMenuStrip1.SuspendLayout();
 			this.pnlBtn.SuspendLayout();
-			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// chkVanish
@@ -73,7 +69,7 @@
 			// btnfrmErrStShow
 			// 
 			this.btnfrmErrStShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnfrmErrStShow.Location = new System.Drawing.Point(407, 190);
+			this.btnfrmErrStShow.Location = new System.Drawing.Point(412, 190);
 			this.btnfrmErrStShow.Name = "btnfrmErrStShow";
 			this.btnfrmErrStShow.Size = new System.Drawing.Size(106, 23);
 			this.btnfrmErrStShow.TabIndex = 21;
@@ -84,7 +80,7 @@
 			// btnItemDn
 			// 
 			this.btnItemDn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnItemDn.Location = new System.Drawing.Point(58, 58);
+			this.btnItemDn.Location = new System.Drawing.Point(58, 29);
 			this.btnItemDn.Name = "btnItemDn";
 			this.btnItemDn.Size = new System.Drawing.Size(50, 23);
 			this.btnItemDn.TabIndex = 1;
@@ -95,23 +91,13 @@
 			// btnItemUp
 			// 
 			this.btnItemUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnItemUp.Location = new System.Drawing.Point(2, 58);
+			this.btnItemUp.Location = new System.Drawing.Point(2, 29);
 			this.btnItemUp.Name = "btnItemUp";
 			this.btnItemUp.Size = new System.Drawing.Size(50, 23);
 			this.btnItemUp.TabIndex = 1;
 			this.btnItemUp.Text = "▲";
 			this.btnItemUp.UseVisualStyleBackColor = true;
 			this.btnItemUp.Click += new System.EventHandler(this.btnItemUp_Click);
-			// 
-			// btnUrlAdd
-			// 
-			this.btnUrlAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnUrlAdd.Location = new System.Drawing.Point(2, 29);
-			this.btnUrlAdd.Name = "btnUrlAdd";
-			this.btnUrlAdd.Size = new System.Drawing.Size(106, 23);
-			this.btnUrlAdd.TabIndex = 1;
-			this.btnUrlAdd.Text = "リストに追加(URL)...";
-			this.btnUrlAdd.UseVisualStyleBackColor = true;
 			// 
 			// timer1
 			// 
@@ -132,9 +118,9 @@
 			// 
 			this.lblStatusApp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblStatusApp.Location = new System.Drawing.Point(9, 222);
+			this.lblStatusApp.Location = new System.Drawing.Point(9, 223);
 			this.lblStatusApp.Name = "lblStatusApp";
-			this.lblStatusApp.Size = new System.Drawing.Size(288, 14);
+			this.lblStatusApp.Size = new System.Drawing.Size(293, 14);
 			this.lblStatusApp.TabIndex = 15;
 			this.lblStatusApp.Text = "AppStatus";
 			this.lblStatusApp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -143,7 +129,7 @@
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(356, 223);
+			this.label1.Location = new System.Drawing.Point(361, 224);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(77, 12);
 			this.label1.TabIndex = 17;
@@ -153,7 +139,7 @@
 			// 
 			this.lblListProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.lblListProgress.AutoSize = true;
-			this.lblListProgress.Location = new System.Drawing.Point(439, 223);
+			this.lblListProgress.Location = new System.Drawing.Point(444, 224);
 			this.lblListProgress.Name = "lblListProgress";
 			this.lblListProgress.Size = new System.Drawing.Size(23, 12);
 			this.lblListProgress.TabIndex = 18;
@@ -162,7 +148,7 @@
 			// btnDownload
 			// 
 			this.btnDownload.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnDownload.Location = new System.Drawing.Point(407, 159);
+			this.btnDownload.Location = new System.Drawing.Point(412, 159);
 			this.btnDownload.Name = "btnDownload";
 			this.btnDownload.Size = new System.Drawing.Size(106, 23);
 			this.btnDownload.TabIndex = 14;
@@ -173,7 +159,7 @@
 			// lblTimeCount
 			// 
 			this.lblTimeCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblTimeCount.Location = new System.Drawing.Point(303, 223);
+			this.lblTimeCount.Location = new System.Drawing.Point(308, 224);
 			this.lblTimeCount.Name = "lblTimeCount";
 			this.lblTimeCount.Size = new System.Drawing.Size(47, 15);
 			this.lblTimeCount.TabIndex = 16;
@@ -192,7 +178,7 @@
 			this.lbUrlList.Location = new System.Drawing.Point(3, 10);
 			this.lbUrlList.Name = "lbUrlList";
 			this.lbUrlList.ScrollAlwaysVisible = true;
-			this.lbUrlList.Size = new System.Drawing.Size(399, 208);
+			this.lbUrlList.Size = new System.Drawing.Size(404, 208);
 			this.lbUrlList.TabIndex = 11;
 			this.lbUrlList.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lbUrlList_DrawItem);
 			this.lbUrlList.SelectedIndexChanged += new System.EventHandler(this.lbUrlList_SelectedIndexChanged);
@@ -229,48 +215,28 @@
 			this.ペーストToolStripMenuItem.Text = "ペースト";
 			this.ペーストToolStripMenuItem.Click += new System.EventHandler(this.ペーストToolStripMenuItem_Click);
 			// 
-			// lblNovelTitle
-			// 
-			this.lblNovelTitle.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblNovelTitle.Location = new System.Drawing.Point(6, 17);
-			this.lblNovelTitle.Name = "lblNovelTitle";
-			this.lblNovelTitle.Size = new System.Drawing.Size(500, 17);
-			this.lblNovelTitle.TabIndex = 0;
-			this.lblNovelTitle.Text = "小説名";
-			// 
-			// lblProgress
-			// 
-			this.lblProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblProgress.Location = new System.Drawing.Point(406, 35);
-			this.lblProgress.Name = "lblProgress";
-			this.lblProgress.Size = new System.Drawing.Size(100, 15);
-			this.lblProgress.TabIndex = 2;
-			this.lblProgress.Text = "  0% (   0 /    0)";
-			this.lblProgress.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			// 
-			// lblStatusNovel
-			// 
-			this.lblStatusNovel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.lblStatusNovel.Location = new System.Drawing.Point(8, 36);
-			this.lblStatusNovel.Name = "lblStatusNovel";
-			this.lblStatusNovel.Size = new System.Drawing.Size(391, 15);
-			this.lblStatusNovel.TabIndex = 1;
-			this.lblStatusNovel.Text = "Status";
-			// 
 			// pnlBtn
 			// 
 			this.pnlBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.pnlBtn.Controls.Add(this.btnNovelAdd);
 			this.pnlBtn.Controls.Add(this.btnItemDn);
 			this.pnlBtn.Controls.Add(this.btnItemUp);
-			this.pnlBtn.Controls.Add(this.btnUrlAdd);
 			this.pnlBtn.Controls.Add(this.btnAddList);
 			this.pnlBtn.Controls.Add(this.btnDelList);
-			this.pnlBtn.Location = new System.Drawing.Point(405, 10);
+			this.pnlBtn.Location = new System.Drawing.Point(410, 10);
 			this.pnlBtn.Name = "pnlBtn";
 			this.pnlBtn.Size = new System.Drawing.Size(110, 143);
 			this.pnlBtn.TabIndex = 20;
+			// 
+			// btnNovelAdd
+			// 
+			this.btnNovelAdd.Location = new System.Drawing.Point(2, 120);
+			this.btnNovelAdd.Name = "btnNovelAdd";
+			this.btnNovelAdd.Size = new System.Drawing.Size(106, 23);
+			this.btnNovelAdd.TabIndex = 3;
+			this.btnNovelAdd.Text = "小説を追加";
+			this.btnNovelAdd.UseVisualStyleBackColor = true;
+			this.btnNovelAdd.Click += new System.EventHandler(this.btnNovelAdd_Click);
 			// 
 			// btnAddList
 			// 
@@ -287,7 +253,7 @@
 			// 
 			this.btnDelList.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnDelList.BackColor = System.Drawing.Color.Yellow;
-			this.btnDelList.Location = new System.Drawing.Point(2, 95);
+			this.btnDelList.Location = new System.Drawing.Point(2, 66);
 			this.btnDelList.Name = "btnDelList";
 			this.btnDelList.Size = new System.Drawing.Size(106, 23);
 			this.btnDelList.TabIndex = 2;
@@ -295,25 +261,19 @@
 			this.btnDelList.UseVisualStyleBackColor = false;
 			this.btnDelList.Click += new System.EventHandler(this.btnDelList_Click);
 			// 
-			// groupBox1
+			// uC_NovelDL
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox1.Controls.Add(this.lblNovelTitle);
-			this.groupBox1.Controls.Add(this.lblProgress);
-			this.groupBox1.Controls.Add(this.lblStatusNovel);
-			this.groupBox1.Location = new System.Drawing.Point(3, 250);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(512, 57);
-			this.groupBox1.TabIndex = 19;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "小説情報";
+			this.uC_NovelDL.Location = new System.Drawing.Point(1, 254);
+			this.uC_NovelDL.Name = "uC_NovelDL";
+			this.uC_NovelDL.Size = new System.Drawing.Size(523, 63);
+			this.uC_NovelDL.TabIndex = 22;
 			// 
 			// frmMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(519, 316);
+			this.ClientSize = new System.Drawing.Size(524, 321);
+			this.Controls.Add(this.uC_NovelDL);
 			this.Controls.Add(this.chkVanish);
 			this.Controls.Add(this.chkListChg);
 			this.Controls.Add(this.btnfrmErrStShow);
@@ -324,7 +284,6 @@
 			this.Controls.Add(this.lblTimeCount);
 			this.Controls.Add(this.lbUrlList);
 			this.Controls.Add(this.pnlBtn);
-			this.Controls.Add(this.groupBox1);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(535, 355);
@@ -334,7 +293,6 @@
 			this.Load += new System.EventHandler(this.frmMain_Load);
 			this.contextMenuStrip1.ResumeLayout(false);
 			this.pnlBtn.ResumeLayout(false);
-			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -347,7 +305,6 @@
 		private System.Windows.Forms.Button btnfrmErrStShow;
 		private System.Windows.Forms.Button btnItemDn;
 		private System.Windows.Forms.Button btnItemUp;
-		private System.Windows.Forms.Button btnUrlAdd;
 		private System.Windows.Forms.Timer timer1;
 		private System.Windows.Forms.CheckBox chkListChg;
 		private System.Windows.Forms.Label lblStatusApp;
@@ -360,13 +317,11 @@
 		private System.Windows.Forms.ToolStripMenuItem コピーToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem ペーストToolStripMenuItem;
-		private System.Windows.Forms.Label lblNovelTitle;
-		private System.Windows.Forms.Label lblProgress;
-		private System.Windows.Forms.Label lblStatusNovel;
 		private System.Windows.Forms.Panel pnlBtn;
 		private System.Windows.Forms.Button btnAddList;
 		private System.Windows.Forms.Button btnDelList;
-		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Button btnNovelAdd;
+		private UC.UC_DownloadNovel uC_NovelDL;
 	}
 }
 
