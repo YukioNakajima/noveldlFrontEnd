@@ -15,6 +15,7 @@ namespace noveldlFrontEnd
 	public partial class frmNovelAdd : Form
 	{
 		private string baseDirPath = "";
+		private bool closeFlag = false;
 
 		public string URL
 		{
@@ -37,7 +38,8 @@ namespace noveldlFrontEnd
 			switch(e.CloseReason)
 			{
 				case CloseReason.UserClosing:
-					e.Cancel = true;
+					if (closeFlag == false) e.Cancel = true;
+					closeFlag = false;
 					break;
 			}
 		}
@@ -81,6 +83,11 @@ namespace noveldlFrontEnd
 		{
 			if (target.Length <= number) return "";
 			return target.Substring(target.Length - number);
+		}
+
+		private void btnCancel_Click(object sender, EventArgs e)
+		{
+			closeFlag = true;
 		}
 	}
 }

@@ -393,7 +393,7 @@ namespace noveldlFrontEnd
 		{
 			int spos = strTitle.IndexOf('【');
 			int epos = strTitle.IndexOf('】');
-			if ((spos >= 0) && (epos >= 0))
+			if ((spos >= 0) && (epos > spos))
 			{
 				switch (strTitle.Substring(spos + 1, epos - spos - 1))
 				{
@@ -509,6 +509,7 @@ namespace noveldlFrontEnd
 			}
 			((List<string>)((BindingSource)lbox.DataSource).DataSource).Add(msg);//リストボックスにバインディングされているデータソースに追加
 			((BindingSource)lbox.DataSource).ResetBindings(false);//バインディングしているコントロールに再描画を通知
+			lbox.SelectedIndex = lbox.Items.Count - 1;
 		}
 
 		private void LogOut(String logMsg)
@@ -1067,15 +1068,14 @@ namespace noveldlFrontEnd
 		{
 			try
 			{
-				//指定されたURLがリストファイルに無ければ追加する
+				//指定されたURLがリストファイルに有れば移動する
 				string listfilepath = (string)lbUrlListGetItem();
 				List<string> Lines = File.ReadAllLines(listfilepath).ToList<string>();
-				int fpathIndex = Lines.IndexOf(filepath);
-				int urlIndex = Lines.IndexOf(url);
 				int idx = Lines.IndexOf(section);
-				if ((fpathIndex > 0) && (urlIndex > 0) && (idx > 0))
+				if ((idx > 0) && Lines.Contains(filepath) && Lines.Remove(url))
 				{
-					//リストの指定セクションの最後に追加する
+					Lines.Remove(filepath);
+					//セクションが有って、情報削除が成功した時、リストの指定セクションの最後に追加する
 					int pos = idx++;
 					for (; idx < Lines.Count; idx++)
 					{
@@ -1085,16 +1085,44 @@ namespace noveldlFrontEnd
 							pos = idx;
 						}
 					}
-					//未確認の為コメントアウト
-					Lines.InsertRange(pos + 1, new string[] { Lines[fpathIndex], Lines[urlIndex] });
-					Lines.RemoveAt(urlIndex);
-					Lines.RemoveAt(fpathIndex);
+					Lines.InsertRange(pos + 1, new string[] { filepath, url });
 					File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
 				}
 			}
 			catch (Exception ex)
 			{
 				string errstr = ex.Message;
+			}
+		}
+
+		/// <summary>
+		/// 指定されたURLがリストファイルに無ければ指定セクションに追加する
+		/// </summary>
+		/// <param name="filePath">追加するファイルパス</param>
+		/// <param name="URL">追加するURL</param>
+		/// <param name="section">追加するセクション</param>
+		private void NovelListAdd(string filePath, string URL,  string section = "#毎週")
+		{
+			string listfilepath = (string)lbUrlListGetItem();
+			List<string> Lines = File.ReadAllLines(listfilepath).ToList<string>();
+			int idx = Lines.IndexOf(section);
+			if ((idx > 0) && (Lines.Contains(URL) == false))
+			{
+				//URLが無いのでリストの毎週の最後に追加する
+				int pos = -1;
+				for (int i = idx + 1; i < Lines.Count; i++)
+				{
+					if (string.IsNullOrEmpty(Lines[i].Trim()) == false)
+					{
+						if (Lines[i].Trim().Substring(0, 1) == "#") break;
+						pos = i;
+					}
+				}
+				if (pos > 0)
+				{
+					Lines.InsertRange(pos + 1, new List<string>() { filePath, URL });
+					File.WriteAllLines(listfilepath, Lines, Encoding.UTF8);
+				}
 			}
 		}
 
@@ -1278,6 +1306,8 @@ namespace noveldlFrontEnd
 			if (frmNA.ShowDialog() == DialogResult.OK)
 			{
 				if (frmErrSt.Visible == false) frmErrSt.Show(this);
+				string dirpath = Path.GetDirectoryName(baseDir + @"\" + frmNA.RelPath);
+				Directory.CreateDirectory(dirpath);
 
 				await DownloadOneAsync(frmNA.URL, baseDir, frmNA.RelPath);
 			}
@@ -1301,11 +1331,11 @@ namespace noveldlFrontEnd
 			{
 				if (novelSt == NOVEL_STATUS.complete)
 				{
-					NovelListMove(relPath, url, "#完結");
+					NovelListAdd(relPath, url, "#完結");
 				}
 				else
 				{
-					NovelListMove(relPath, url, "#毎週");
+					NovelListAdd(relPath, url, "#毎週");
 				}
 			}
 		}
