@@ -1,0 +1,44 @@
+posx=G_MOUSE_X
+posy=G_MOUSE_Y
+ffid=GETID("Mozilla Firefox","MozillaWindowClass",0)
+IF ffid = -1
+	MSGBOX("FireFoxを利用します、起動してください")
+	ffid=GETID("Mozilla Firefox","MozillaWindowClass",-1)
+ENDIF
+IF MSGBOX("小説家になろうの挿絵のURLを開いてください。続けますか", BTN_YES or BTN_NO) = BTN_NO
+	EXITEXIT
+ENDIF
+LOCKHARDEX(0,0)
+ACW(ffid,156,0,1483,1152)
+wx=STATUS(ffid,ST_X)
+wy=STATUS(ffid,ST_Y)
+ww=STATUS(ffid,ST_WIDTH)
+wh=STATUS(ffid,ST_HEIGHT)
+//MSGBOX("window:x=" + wx +",y=" + wy + ",w=" + ww + ",h=" + wh)
+BALLOON("ESCキーで終了")
+REPEAT
+	//URLを取得して画像名を作成する
+	strurl=GETSTR(ffid, 1)
+	strfigname=REPLACE(REPLACE(REPLACE(strurl,"https://",""),".mitemin.net/","_"),"/","")
+	REPEAT
+		//画像部分を右クリック
+		BTN(RIGHT,CLICK,1014,474,100)
+		//名前を付けてリンクを保存をクリック
+	UNTIL CLKITEM(ffid, "名前を付けてリンク先を保存", CLK_ACC or CLK_LEFTCLK) = FALSE
+	//ダイアログ表示
+	fsdid = GETID("保存ファイル名を入力してください...", "#32770",0)
+	SENDSTR(fsdid, strfigname, 2, True)
+	SLEEP(0.1)
+	CLKITEM(fsdid, "保存", CLK_ACC)
+	ACW(ffid,156,0,1483,1152,0)
+	SLEEP(0.1)
+
+	//次へのリンククリックができないか、ESCキーが押されたら終了
+	IF (CLKITEM(ffid, ">>", CLK_LINK or CLK_SHORT) = FALSE) OR GETKEYSTATE(VK_ESCAPE) THEN
+		ans = BTN_NO
+	ELSE
+		ans=MSGBOX("続けますか？", BTN_YES or BTN_NO)
+	ENDIF
+UNTIL ans = BTN_NO
+MMV(posx,posy)
+LOCKHARDEX()
