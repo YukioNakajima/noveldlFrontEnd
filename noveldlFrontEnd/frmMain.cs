@@ -826,7 +826,7 @@ namespace noveldlFrontEnd
 					{
 						//小説ファイルをマージする
 						//リンクの図を検索してリンクのみの文字列配列を取得し、情報ファイルの内容に追加・重複削除する
-						getFigLink(File.ReadAllLines(tmppath), ref infoLines);
+						int addFigCount = getFigLink(File.ReadAllLines(tmppath), ref infoLines);
 						if (File.Exists(tmppath))
 						{
 							if (dlAfterOpeNovel1Later != "")
@@ -865,8 +865,9 @@ namespace noveldlFrontEnd
 							File.Delete($@"{dirname}\__tmp.log");
 						}
 						ChapCount = TotalChap = uC_NovelDL.ChapNum;
-						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} + {ChapCount} Fig{infoLines}:[{relfpath}{fname}], {UrlAdr}");
-						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
+						string msg = $"更新 #{startChap} + {ChapCount} Fig{addFigCount}:[{relfpath}], {UrlAdr}";
+						listBoxAdd(frmErrSt.lboxErrStatus, msg);
+						LogOut(msg);
 					}
 					else if (chkVanish.Checked)
 					{
@@ -904,7 +905,7 @@ namespace noveldlFrontEnd
 					{
 						infoLines = new List<string>();
 						//リンクの図を検索してリンクのみの文字列配列を取得し、情報ファイルの内容に追加・重複削除する
-						getFigLink(File.ReadAllLines(filepath), ref infoLines);
+						int addFigCount = getFigLink(File.ReadAllLines(filepath), ref infoLines);
 						if (dlAfterOpeNovel1st != "")
 						{
 							exeAfterOperation(dlAfterOpeNovel1st, filepath);
@@ -920,8 +921,9 @@ namespace noveldlFrontEnd
 							exeAfterOperation(str, filepath);
 						}
 						ChapCount = TotalChap = uC_NovelDL.ChapNum;
-						listBoxAdd(frmErrSt.lboxErrStatus, $"追加 #1 count{ChapCount}:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、{UrlAdr}、開始章1、読込章数{ChapCount}");
+						string msg = $"追加 #1 + {ChapCount} Fig{addFigCount}:[{relfpath}], {UrlAdr}";
+						listBoxAdd(frmErrSt.lboxErrStatus,msg);
+						LogOut(msg);
 					}
 					else
 					{
@@ -1235,11 +1237,12 @@ namespace noveldlFrontEnd
 		/// </summary>
 		/// <param name="strSrray">抽出元の文字列配列￥</param>
 		/// <param name="destlist">マージする文字列のリスト</param>
-		private void getFigLink(string[] strSrray, ref List<string> destlist)
+		private int getFigLink(string[] strSrray, ref List<string> destlist)
 		{
 			string[] strs = getFigLink(strSrray);
 			destlist.AddRange(strs);
 			destlist.Distinct();
+			return destlist.Count;
 		}
 
 		private string[] getFigLink(string[] strSrray)
