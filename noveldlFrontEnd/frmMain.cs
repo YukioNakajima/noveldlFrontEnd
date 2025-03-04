@@ -761,9 +761,8 @@ namespace noveldlFrontEnd
 		/// 小説をダウンロード
 		/// </summary>
 		/// <param name="UrlAdr">URL</param>
-		/// <param name="DirName">格納するディレクトリ名</param>
-		/// <param name="fname">ファイル名</param>
-		/// <param name="fext">ファイル拡張子</param>
+		/// <param name="baseDir">ベースの格納するディレクトリ名</param>
+		/// <param name="relfpath">ベースからの相対の格納するファイルパス</param>
 		/// <returns>小説がある場合true</returns>
 		private bool DownloadNovel(string UrlAdr, string baseDir = "", string relfpath = "")
 		{
@@ -866,7 +865,7 @@ namespace noveldlFrontEnd
 							File.Delete($@"{dirname}\__tmp.log");
 						}
 						ChapCount = TotalChap = uC_NovelDL.ChapNum;
-						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} count{ChapCount}:[{fname}], {UrlAdr}");
+						listBoxAdd(frmErrSt.lboxErrStatus, $"更新 #{startChap} + {ChapCount} Fig{infoLines}:[{relfpath}{fname}], {UrlAdr}");
 						LogOut($"{fname}、{UrlAdr}、開始章{startChap}、読込章数{ChapCount}");
 					}
 					else if (chkVanish.Checked)
