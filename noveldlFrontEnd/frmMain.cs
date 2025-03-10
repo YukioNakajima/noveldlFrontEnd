@@ -884,7 +884,7 @@ namespace noveldlFrontEnd
 						{
 							//MessageBox.Show($"[{fname}]が消失しました", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 							listBoxAdd(frmErrSt.lboxErrStatus, $"消滅:[{fname}], {UrlAdr}");
-							LogOut($"{fname}、{UrlAdr}、消滅");
+							LogOut($"消滅:{fname}、{UrlAdr}");
 						}
 					}
 					//完結確認
@@ -928,8 +928,9 @@ namespace noveldlFrontEnd
 					else
 					{
 						//MessageBox.Show($"[{fname}]がダウンロードできませんでした", "警告", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-						listBoxAdd(frmErrSt.lboxErrStatus, $"ロスト:[{fname}], {UrlAdr}");
-						LogOut($"{fname}、{UrlAdr}、消滅");
+						string msg = $"ロスト:[{fname}], {UrlAdr}";
+						listBoxAdd(frmErrSt.lboxErrStatus, msg);
+						LogOut(msg);
 					}
 					//完結確認
 					if (novelSt == NOVEL_STATUS.complete)
@@ -1242,7 +1243,7 @@ namespace noveldlFrontEnd
 			string[] strs = getFigLink(strSrray);
 			destlist.AddRange(strs);
 			destlist.Distinct();
-			return destlist.Count;
+			return strs.Length;
 		}
 
 		private string[] getFigLink(string[] strSrray)
